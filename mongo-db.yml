@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  #pod name
+  name: pod-mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      # app name
+      app: mongodb # Same as template metadata label app name
+  template:
+    metadata:
+      labels:
+        # app name
+        app: mongodb
+    spec:
+      containers:
+        - name: mongodb-container #container name
+          image: mongo:latest #docker image
+
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongodb-vol # volume name
+      volumes:
+        - name: mongodb-vol # volume name
+          persistentVolumeClaim:
+            claimName: host-pvc
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  # service name
+  name: service-mongodb
+spec:
+  selector:
+    # app name
+    app: mongodb
+  ports:
+    - name: tcp
+      port: 27017
+      targetPort: 27017

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # pod name
+  name: pod-node-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+       # app name
+      app: node-app # Same as template metadata label app name
+  template:
+    metadata:
+      labels:
+        # app name
+        app: node-app
+    spec:
+      containers:
+        - name: node-app-container #container name
+          image: "IMAGE_NAME" #docker image
+          env:
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  # config name
+                  name: config-mongo # exact same as app name in config
+                  key: MONGO_HOST # config data key
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  # config name
+                  name: config-mongo # exact same as app name in config
+                  key: MONGO_PORT # config data key
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  # service name
+  name: service-node-app
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 3000
+  selector:
+    app: node-app # exact same as app name in pod
+  type: LoadBalancer
