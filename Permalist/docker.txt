@@ -1,0 +1,13 @@
+docker network create permalist-app-network
+
+docker build -t permalist-app:v1 .
+
+docker run -d --name postgres-db --network permalist-app-network -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=23456781 -e POSTGRES_DB=permalist -p 5432:5432 postgres
+
+docker run --rm --name permalist --network permalist-app-network --env-file .env -p 8080:8080 permalist-app:v1
+
+docker exec -it postgres-db sh
+
+psql PGPASSWORD=<password> psql -U <postgres-user> -d <database-name>
+
+psql -U postgres -d permalist

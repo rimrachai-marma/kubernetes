@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: permalist-app-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: permalist-app
+  template:
+    metadata:
+      labels:
+        app: permalist-app
+    spec:
+      containers:
+        - name: permalist-app
+          image: rimra/permalist:v2
+          ports:
+            - containerPort: 8080
+          env:
+            # from configmap
+            - name: MONGO_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: MONGO_HOST
+            - name: MONGO_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: mongo-config
+                  key: MONGO_PORT
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: permalist-app-service
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app: permalist-app

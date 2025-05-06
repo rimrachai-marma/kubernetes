@@ -1,0 +1,12 @@
+k8s
+node_modules
+npm-debug.log
+Dockerfile
+.dockerignore
+.git
+.gitignore
+.env
+dist
+coverage
+logs
+*.log

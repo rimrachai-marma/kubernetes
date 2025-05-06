@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  postgresdb:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 23456781
+      POSTGRES_DB: permalist
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - permalist-app-net
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  permalist:
+    build: .
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresdb:
+        condition: service_healthy
+    networks:
+      - permalist-app-net
+
+volumes:
+  db-data:
+
+networks:
+  permalist-app-net:

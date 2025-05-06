@@ -1,0 +1,7 @@
+docker network create permalist-app-net
+
+docker build -t permalist-app:v1 .
+
+docker run -d --name mongodb --network permalist-app-net -p 27017:27017 mongo
+
+docker run --rm --name permalist-app --network permalist-app-net --env-file .env -p 8080:8080 permalist-app:v1
